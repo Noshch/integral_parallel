@@ -1,0 +1,59 @@
+#include <stdio.h>
+#include <math.h>
+#include <conio.h>
+#include <iostream>
+#include <omp.h>
+#define _USE_MATH_DEFINES
+#include <cmath>
+ double x, dx1, a, c, s=0, rpr=0, rsh=0, b;
+ const double pi = 3.141592653589793238463;
+ double k=31*(pi)/2;
+ using namespace std;
+ #include <windows.h>
+
+double PCFreq = 0.0;
+__int64 CounterStart = 0;
+
+void StartCounter()
+{
+    LARGE_INTEGER li;
+    if(!QueryPerformanceFrequency(&li))
+    cout << "QueryPerformanceFrequency failed!\n";
+
+  PCFreq = double(li.QuadPart)/100000.0;
+
+    QueryPerformanceCounter(&li);
+    CounterStart = li.QuadPart;
+}
+double GetCounter()
+{
+    LARGE_INTEGER li;
+    QueryPerformanceCounter(&li);
+    return double(li.QuadPart-CounterStart)/PCFreq;
+}
+int main()
+{
+a=0;
+b=1.0/3;
+c=pow(k,b); // отрезок
+dx1=0.0001; //разбиение для отрезка
+StartCounter();
+    Sleep(1000);
+ #pragma omp parallel num_threads(1) //выберете количество ядер
+ #pragma omp parallel shared(rsh) private(rpr)
+ //#pragma omp parallel reduction (+: rsh)
+  {
+    #pragma omp for
+    for (x=0; x<=c; x=x+dx1)
+    {
+     double y = 3*x*x*sin(x*x*x);
+     rpr += y*dx1;
+    }
+     #pragma omp critical
+     rsh += rpr;
+
+  }
+ cout << "answer_s=" << rsh << "\n"; // конечный ответ
+ cout << GetCounter() <<"\n";
+return 0;
+}
