@@ -15,10 +15,7 @@ a=0;
 b=1.0/3;
 c=pow(k,b); // отрезок
 dx1=0.0001; //разбиение для отрезка
-
- #pragma omp parallel num_threads(2) //выберете количество ядер
- #pragma omp parallel shared(rsh) private(rpr)
- //#pragma omp parallel reduction (+: rsh)
+ #pragma omp parallel shared(rsh) private(rpr) num_threads(2)
   {
     #pragma omp for
     for (x=0; x<=c; x=x+dx1)
@@ -31,6 +28,6 @@ dx1=0.0001; //разбиение для отрезка
 
   }
  cout << "answer_s=" << rsh << "\n"; // конечный ответ
-cout << "runtime = " << clock()*10000.0 << endl;
+cout << "runtime = " << clock()/10000.0 << endl; //время
 return 0;
 }
